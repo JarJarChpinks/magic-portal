@@ -28,7 +28,6 @@ const canvas = document.querySelector('canvas') || document.createElement('canva
 if (!canvas.parentElement) document.body.appendChild(canvas);
 const ctx = canvas.getContext('2d');
 
-// UI Windows
 const uiWindows = {
     rankChoice: document.createElement('div'),
     userConfirm: document.createElement('div'),
@@ -39,19 +38,17 @@ const uiWindows = {
     controls: document.createElement('div')
 };
 
-const baseWinStyle = "display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:5000; flex-direction:column; justify-content:center; align-items:center; color:white; font-family:sans-serif; text-align:center;";
+// Исправленный z-index: 10000 для окон, меню должно быть 20000 в CSS
+const baseWinStyle = "display:none; position:fixed; inset:0; background:rgba(0,0,0,0.95); z-index:10000; flex-direction:column; justify-content:center; align-items:center; color:white; font-family:sans-serif; text-align:center;";
 Object.keys(uiWindows).forEach(key => {
     uiWindows[key].style.cssText = baseWinStyle;
-    if(key === 'timer') uiWindows[key].style.cssText = "position:fixed; top:20px; right:20px; font-size:2rem; color:#00fbff; font-weight:bold; display:none; z-index:1000;";
-    if(key === 'quest') uiWindows[key].style.cssText = "position:fixed; top:15px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,0.1); padding:12px 30px; border-radius:50px; color:white; display:none; z-index:1000; border:1px solid rgba(255,255,255,0.2); backdrop-filter:blur(10px); font-family:sans-serif; font-size:1.4rem;";
+    if(key === 'timer') uiWindows[key].style.cssText = "position:fixed; top:20px; right:20px; font-size:2rem; color:#00fbff; font-weight:bold; display:none; z-index:5000;";
+    if(key === 'quest') uiWindows[key].style.cssText = "position:fixed; top:15px; left:50%; transform:translateX(-50%); background:rgba(255,255,255,0.1); padding:12px 30px; border-radius:50px; color:white; display:none; z-index:5000; border:1px solid rgba(255,255,255,0.2); backdrop-filter:blur(10px); font-family:sans-serif; font-size:1.4rem;";
     document.body.appendChild(uiWindows[key]);
 });
 
-// Наполнение UI
-uiWindows.rankChoice.innerHTML = `<h2>Рейтинг?</h2><div style="display:flex; gap:20px; margin:20px 0;"><button class="alphabet-btn" onclick="handleRankChoice(true)">ДА</button><button class="alphabet-btn" onclick="handleRankChoice(false)">НЕТ</button></div><div id="lb-container" style="width:300px; height:200px; overflow-y:auto; background:rgba(255,255,255,0.05); padding:10px;"><div id="lb-list"></div></div>`;
-uiWindows.userConfirm.innerHTML = `<h2 id="user-greet"></h2><button class="alphabet-btn" onclick="confirmUser(true)">ДА</button><button class="alphabet-btn" onclick="confirmUser(false)">НЕТ</button>`;
-uiWindows.auth.innerHTML = `<h2>Имя?</h2><input type="text" id="u-name" style="padding:10px;"><button class="alphabet-btn" onclick="saveUserAndNext()">ГОТОВО</button>`;
-uiWindows.alphaStart.innerHTML = `<h2>Режим</h2><button class="alphabet-btn" onclick="startAlphabetSequence(true)">МЕШАТЬ</button><button class="alphabet-btn" onclick="startAlphabetSequence(false)">ПОРЯДОК</button>`;
+uiWindows.rankChoice.innerHTML = `<h2>Рейтинг?</h2><div style="display:flex; gap:20px; margin:20px 0;"><button class="alphabet-btn" onclick="handleRankChoice(true)">ДА</button><button class="alphabet-btn" onclick="handleRankChoice(false)">НЕТ</button></div>`;
+uiWindows.alphaStart.innerHTML = `<h2>Режим</h2><div style="display:flex; gap:20px;"><button class="alphabet-btn" onclick="startAlphabetSequence(true)">МЕШАТЬ</button><button class="alphabet-btn" onclick="startAlphabetSequence(false)">ПОРЯДОК</button></div>`;
 
 const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
 window.addEventListener('resize', resize); resize();
@@ -68,136 +65,130 @@ function playSfx(freq, type = 'sine', vol = 0.1, dur = 0.2) {
 }
 
 function drawObject(x, y, s, color, shape, op = 1) {
-    if (op <= 0) return;
-    ctx.globalAlpha = op; ctx.fillStyle = color; ctx.beginPath();
+    if (op <= 0) return; ctx.globalAlpha = op; ctx.fillStyle = color; ctx.beginPath();
     if (shape === 'circle') ctx.arc(x, y, s, 0, Math.PI*2);
     else if (shape === 'star') { for(let i=0; i<10; i++) { let r = (i%2===0)?s:s/2; ctx.lineTo(x + r*Math.cos(i*Math.PI/5 - Math.PI/2), y + r*Math.sin(i*Math.PI/5 - Math.PI/2)); } }
     else if (shape === 'triangle') { ctx.moveTo(x, y-s); ctx.lineTo(x+s, y+s); ctx.lineTo(x-s, y+s); }
+    else if (shape === 'rect') ctx.rect(x-s*1.5, y-s/2, s*3, s);
     else ctx.rect(x-s, y-s, s*2, s*2);
     ctx.fill(); ctx.closePath(); ctx.globalAlpha = 1;
 }
 
 function setMode(newMode) {
     config.mode = newMode;
-    config.bodies = []; config.particles = []; config.targets = []; config.snakeTrail = []; config.countdown = 0;
+    config.bodies = []; config.particles = []; config.targets = []; config.countdown = 0;
     Object.values(uiWindows).forEach(win => win.style.display = 'none');
     document.getElementById('welcome-screen').style.display = (newMode === 'none') ? 'flex' : 'none';
     document.getElementById('menu').classList.remove('active');
-    if (newMode !== 'none' && !document.fullscreenElement && !/iPhone/i.test(navigator.userAgent)) document.documentElement.requestFullscreen().catch(()=>{});
-    if (newMode === 'alphabet') { updateLeaderboardUI(); uiWindows.rankChoice.style.display = 'flex'; }
+    if (newMode === 'alphabet') uiWindows.rankChoice.style.display = 'flex';
     else if (newMode === 'pop') { for(let i=0; i<5; i++) addPopTarget(); }
-    else if (newMode === 'flashlight') initQuest();
 }
 
-// УНИВЕРСАЛЬНЫЙ ВВОД (И КЛАВИШИ, И ТАЧИ)
-function handleAction(key, code, isAutoTouch = false) {
-    if (config.mode === 'none') return;
+// ГЛОБАЛЬНАЯ ЛОГИКА ДЕЙСТВИЯ
+function handleAction(key, code, isTouch = false) {
+    if (config.mode === 'none' || config.countdown > 0) return;
     const color = config.colors[Math.floor(Math.random()*9)], shape = config.shapes[Math.floor(Math.random()*7)];
 
-    if (config.mode === 'alphabet' && !config.isFinished && config.countdown === 0) {
+    if (config.mode === 'alphabet' && !config.isFinished) {
         const target = config.currentLetters[config.activeIndex].toLowerCase();
-        // На мобилках любое касание = правильная буква
-        if (isAutoTouch || (key && key.toLowerCase() === target) || code === 'Key'+target.toUpperCase()) {
-            config.activeIndex++;
-            playSfx(600);
+        if (isTouch || (key && key.toLowerCase() === target) || code === 'Key'+target.toUpperCase()) {
+            config.activeIndex++; playSfx(600);
             if (config.activeIndex >= config.currentLetters.length) {
                 config.isFinished = true; config.endTime = Date.now();
-                const time = ((config.endTime - config.startTime)/1000).toFixed(1);
-                uiWindows.controls.innerHTML = `<h2>ФИНИШ!</h2><p>${time}с</p><button class="alphabet-btn" onclick="setMode('none')">МЕНЮ</button>`;
+                uiWindows.controls.innerHTML = `<h2>ФИНИШ!</h2><button class="alphabet-btn" onclick="setMode('none')">В МЕНЮ</button>`;
                 uiWindows.controls.style.display = 'flex';
             }
-        } else if (key && key.length === 1) { config.errorCount++; config.shake = 15; playSfx(150, 'sawtooth'); }
+        } else if (key && key.length === 1) { config.shake = 15; playSfx(150, 'sawtooth'); }
     }
-    
     if (config.mode === 'chaos') {
-        for(let i=0; i<5; i++) config.particles.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, vx:random(-2,2), vy:random(-2,2), age:1.2, color, shape});
+        for(let i=0; i<5; i++) config.particles.push({x: random(0,width), y: random(0,height), vx:random(-3,3), vy:random(-3,3), age:1, color, shape});
     }
     if (config.mode === 'symphony') {
-        playSfx(440 + Math.random()*400);
-        config.bodies.push({ x: random(50, canvas.width-50), y: random(50, canvas.height-50), vx:0, vy:0, size: 50, color, shape, op: 1 });
+        playSfx(random(400, 800));
+        config.bodies.push({ x: random(50, canvas.width-50), y: random(50, canvas.height-50), vx:0, vy:0, size: 40, color, shape, op: 1 });
     }
     if (config.mode === 'physics') {
-        config.bodies.push({ x: config.mouseX, y: config.mouseY, vx: random(-5,5), vy:-5, size: 25, color, shape, op: 1, exp: false });
+        config.bodies.push({ x: config.mouseX, y: config.mouseY, vx: random(-4,4), vy:-6, size: 25, color, shape, op: 1 });
     }
 }
 
-// Слушатели
-const getPos = (e) => { 
-    const t = e.touches ? e.touches[0] : e; 
-    config.mouseX = t.clientX; config.mouseY = t.clientY; 
+// СОБЫТИЯ ВВОДА
+const updateCoords = (e) => {
+    const t = e.touches ? e.touches[0] : e;
+    config.mouseX = t.clientX; config.mouseY = t.clientY;
 };
 
-const onDown = (e) => {
-    // Не реагируем, если клик по меню или кнопкам
-    if (e.target.closest('#menu') || e.target.closest('#menu-trigger') || e.target.closest('.alphabet-btn')) return;
+const inputStart = (e) => {
+    // Если нажали на меню или UI — не запускаем игру
+    if (e.target.closest('#menu') || e.target.closest('#menu-trigger') || e.target.closest('.alphabet-btn') || e.target.closest('.item')) return;
     
-    config.isMouseDown = true; getPos(e);
+    config.isMouseDown = true; updateCoords(e);
     if (audioCtx.state === 'suspended') audioCtx.resume();
-    
+
     if (config.mode === 'pop') {
         for (let i = config.targets.length-1; i>=0; i--) {
             let t = config.targets[i];
             if (Math.hypot(config.mouseX - t.x, config.mouseY - t.y) < t.size + 20) { config.targets.splice(i,1); playSfx(800); addPopTarget(); }
         }
     }
-    // На мобилке любое касание продвигает алфавит
-    handleAction('', '', true); 
+    handleAction('', '', e.touches ? true : false);
 };
 
-window.addEventListener('mousedown', onDown);
-window.addEventListener('touchstart', (e) => { onDown(e); if(config.mode!=='none') e.preventDefault(); }, {passive:false});
-window.addEventListener('mousemove', getPos);
-window.addEventListener('touchmove', (e) => { getPos(e); if(config.mode!=='none') e.preventDefault(); }, {passive:false});
+window.addEventListener('mousedown', inputStart);
+window.addEventListener('touchstart', (e) => { inputStart(e); if(config.mode!=='none') e.preventDefault(); }, {passive:false});
+window.addEventListener('mousemove', updateCoords);
+window.addEventListener('touchmove', (e) => { updateCoords(e); if(config.mode!=='none') e.preventDefault(); }, {passive:false});
 window.addEventListener('mouseup', () => config.isMouseDown = false);
 window.addEventListener('touchend', () => config.isMouseDown = false);
 window.addEventListener('keydown', (e) => { if(e.key==='Escape') setMode('none'); else handleAction(e.key, e.code); });
 
-// Системные функции
+// ВСПОМОГАТЕЛЬНЫЕ
 const random = (min, max) => Math.random() * (max - min) + min;
 function handleRankChoice(wants) { uiWindows.rankChoice.style.display = 'none'; uiWindows.alphaStart.style.display = 'flex'; }
-function saveUserAndNext() { uiWindows.auth.style.display = 'none'; uiWindows.alphaStart.style.display = 'flex'; }
-function confirmUser(s) { uiWindows.userConfirm.style.display = 'none'; uiWindows.alphaStart.style.display = 'flex'; }
-function startAlphabetSequence(s) { config.isShuffle=s; uiWindows.alphaStart.style.display='none'; config.countdown=3; let i=setInterval(()=>{ if(config.countdown>1){config.countdown--; playSfx(400);} else {clearInterval(i); config.countdown=0; initAlphabet(s);} },800); }
+function startAlphabetSequence(s) { 
+    uiWindows.alphaStart.style.display='none'; config.countdown=3; 
+    let int = setInterval(() => { if(config.countdown>1){ config.countdown--; playSfx(400); } else { clearInterval(int); config.countdown=0; initAlphabet(s); } }, 800);
+}
 function initAlphabet(s) { config.currentLetters=[...config.alphabet]; if(s) config.currentLetters.sort(()=>Math.random()-0.5); config.activeIndex=0; config.isFinished=false; config.startTime=Date.now(); uiWindows.timer.style.display='block'; }
-function updateLeaderboardUI() { document.getElementById('lb-list').innerHTML = "Топ временно недоступен"; }
-function addPopTarget() { config.targets.push({ x: random(50,canvas.width-50), y: random(50,canvas.height-50), size: 30, color: config.colors[Math.floor(Math.random()*9)], shape: config.shapes[0] }); }
-function initQuest() { uiWindows.quest.style.display='block'; uiWindows.quest.innerText = "Режим фонарика активен"; }
+function addPopTarget() { config.targets.push({ x: random(50,canvas.width-50), y: random(50,canvas.height-50), size: 40, color: config.colors[Math.floor(Math.random()*9)], shape: 'circle' }); }
 
 function draw() {
     ctx.fillStyle = 'black'; ctx.fillRect(0, 0, canvas.width, canvas.height);
-    if (config.countdown > 0) { ctx.fillStyle = "#0ff"; ctx.font = "150px sans-serif"; ctx.textAlign = "center"; ctx.fillText(config.countdown, canvas.width/2, canvas.height/2+50); }
+    if (config.countdown > 0) { ctx.fillStyle = "#0ff"; ctx.font = "bold 120px sans-serif"; ctx.textAlign = "center"; ctx.fillText(config.countdown, canvas.width/2, canvas.height/2+40); }
     if (config.mode === 'alphabet' && config.countdown === 0) {
-        uiWindows.timer.innerText = (( (config.isFinished?config.endTime:Date.now()) - config.startTime)/1000).toFixed(1)+"с";
-        const cols = 8, gap = 70, startX = (canvas.width - 7*gap)/2;
+        uiWindows.timer.innerText = (((config.isFinished?config.endTime:Date.now())-config.startTime)/1000).toFixed(1)+"с";
+        const cols = 8, gap = canvas.width > 600 ? 80 : 45, startX = (canvas.width - (cols-1)*gap)/2;
         config.currentLetters.forEach((char, i) => {
-            let x = startX + (i%cols)*gap, y = 150 + Math.floor(i/cols)*gap;
+            let x = startX + (i%cols)*gap, y = 140 + Math.floor(i/cols)*gap;
             ctx.strokeStyle = (i===config.activeIndex)?"#0ff":"#333";
-            ctx.strokeRect(x-30, y-30, 60, 60);
+            ctx.strokeRect(x-gap/2.5, y-gap/2.5, gap/1.2, gap/1.2);
             ctx.fillStyle = (i===config.activeIndex)?"#0ff":(i<config.activeIndex?"#222":"#fff");
-            ctx.font = "25px sans-serif"; ctx.fillText(char, x, y+8);
+            ctx.font = (gap/2.5) + "px sans-serif"; ctx.textAlign="center"; ctx.fillText(char, x, y + gap/8);
         });
     }
+    // Рендеринг тел (Физика / Симфония)
+    config.bodies.forEach((b, i) => { 
+        b.x+=b.vx; b.y+=b.vy; b.op-=0.015; if(config.mode==='physics') b.vy+=0.3;
+        drawObject(b.x, b.y, 30, b.color, b.shape, b.op); if(b.op<=0) config.bodies.splice(i,1); 
+    });
     if (config.mode === 'chaos') {
         if(config.isMouseDown) handleAction('','',true);
-        config.particles.forEach((p, i) => { p.x+=p.vx; p.y+=p.vy; p.age-=0.02; drawObject(p.x, p.y, 5, p.color, p.shape, p.age); if(p.age<=0) config.particles.splice(i,1); });
-    }
-    if (config.mode === 'physics' || config.mode === 'symphony') {
-        config.bodies.forEach((b, i) => { 
-            b.x+=b.vx; b.y+=b.vy; b.op-=0.01; 
-            if(config.mode==='physics') b.vy+=0.3;
-            drawObject(b.x, b.y, 30, b.color, b.shape, b.op); 
-            if(b.op<=0) config.bodies.splice(i,1); 
-        });
+        config.particles.forEach((p, i) => { p.x+=p.vx; p.y+=p.vy; p.age-=0.02; drawObject(p.x, p.y, 6, p.color, p.shape, p.age); if(p.age<=0) config.particles.splice(i,1); });
     }
     if (config.mode === 'pop') config.targets.forEach(t => drawObject(t.x, t.y, t.size, t.color, 'circle'));
     requestAnimationFrame(draw);
 }
 
-// Привязка меню (фикс)
-const mTrigger = document.getElementById('menu-trigger');
-if(mTrigger) mTrigger.onclick = (e) => { e.stopPropagation(); document.getElementById('menu').classList.toggle('active'); };
+// ПРИВЯЗКА МЕНЮ
+document.getElementById('menu-trigger').onclick = (e) => { 
+    e.preventDefault(); e.stopPropagation(); 
+    document.getElementById('menu').classList.toggle('active'); 
+};
 document.querySelectorAll('.item').forEach(el => {
-    el.onclick = (e) => { e.stopPropagation(); setMode(el.getAttribute('data-mode')); };
+    el.onclick = (e) => { 
+        e.preventDefault(); e.stopPropagation(); 
+        setMode(el.getAttribute('data-mode')); 
+    };
 });
 
 draw();
