@@ -3,23 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Magic Portal Pro</title>
+    <title>Magic Portal - Fix</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="menu-trigger"></div>
+    <!-- Контейнер для холста, чтобы он не перекрывал всё подряд -->
+    <div id="canvas-wrapper"></div>
+
+    <div id="menu-trigger" onclick="toggleMenu(event)"></div>
+    
     <div id="menu">
-        <div class="item" data-mode="alphabet">🔠 Алфавит</div>
-        <div class="item" data-mode="chaos">✨ Хаос (Клавиши)</div>
-        <div class="item" data-mode="physics">⚽ Физика</div>
-        <div class="item" data-mode="pop">🎈 Лопни шарик</div>
-        <div class="item" data-mode="flashlight">🔦 Фонарик</div>
-        <div class="item" data-mode="none">🏠 Главная</div>
+        <div class="item" onclick="selectMode('alphabet', event)">🔠 Алфавит</div>
+        <div class="item" onclick="selectMode('physics', event)">⚽ Физика</div>
+        <div class="item" onclick="selectMode('pop', event)">🎈 Шарики</div>
+        <div class="item" onclick="selectMode('none', event)">🏠 Главная</div>
     </div>
 
     <div id="welcome-screen">
         <h1>MAGIC PORTAL</h1>
-        <p>Выбери игру в меню слева</p>
+        <p>Нажми на синюю полоску слева</p>
     </div>
 
     <script src="https://cdnjs.cloudflare.com"></script>
