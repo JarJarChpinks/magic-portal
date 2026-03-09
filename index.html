@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Magic Portal 20.0</title>
+    <title>Magic Portal 21.0</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,7 +15,7 @@
         </div>
     </div>
 
-    <div id="menu-trigger" onclick="toggleMenu()"></div>
+    <div id="menu-trigger" onclick="toggleMenu(event)"></div>
     <nav id="menu">
         <div class="item" onclick="location.reload()">🏠 ГЛАВНОЕ МЕНЮ</div>
         <div id="menu-list"></div>
@@ -23,7 +23,7 @@
 
     <div id="welcome-screen">
         <h1 class="glow-text">MAGIC PORTAL</h1>
-        <p style="color:#00fbff">Выберите игру в меню</p>
+        <p style="color:#00fbff">Выберите игру в меню слева</p>
     </div>
 
     <canvas id="mainCanvas"></canvas>
