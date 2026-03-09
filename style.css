@@ -1,79 +1,27 @@
-* { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
-body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+* { margin: 0; padding: 0; box-sizing: border-box; touch-action: none; }
+body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: sans-serif; }
 
-/* Триггер меню */
 #menu-trigger {
-    position: fixed; top: 20px; left: 0;
-    width: 30px; height: 80px;
-    background: rgba(0, 251, 255, 0.2);
-    border: 1px solid rgba(0, 251, 255, 0.4);
-    border-radius: 0 10px 10px 0;
-    cursor: pointer; z-index: 2000;
+    position: fixed; top: 20px; left: 0; width: 40px; height: 80px;
+    background: rgba(0, 251, 255, 0.4); border-radius: 0 10px 10px 0;
+    cursor: pointer; z-index: 30000; border: 1px solid #00fbff;
 }
 
-/* Меню */
 #menu {
-    position: fixed; top: 20px; left: -260px;
-    width: 230px; background: rgba(15, 15, 15, 0.95);
-    border: 1px solid #333; color: white;
-    z-index: 1500; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    padding: 10px; border-radius: 0 15px 15px 0;
-    backdrop-filter: blur(10px);
+    position: fixed; top: 20px; left: -260px; width: 240px;
+    background: rgba(10, 10, 10, 0.95); color: white; z-index: 25000;
+    transition: 0.4s ease; padding: 10px; border-radius: 0 15px 15px 0;
+    border: 1px solid #00fbff; backdrop-filter: blur(10px);
 }
 #menu.active { left: 0; }
 
-.item { 
-    padding: 15px; cursor: pointer; border-bottom: 1px solid #222; 
-    transition: 0.2s; font-size: 1.1rem; 
-}
-.item:hover { background: rgba(0, 251, 255, 0.1); color: #00fbff; padding-left: 25px; }
+.item { padding: 15px; cursor: pointer; border-bottom: 1px solid #222; font-size: 1.1rem; }
+.item:hover { background: rgba(0, 251, 255, 0.1); color: #00fbff; }
 
-/* Приветствие */
 #welcome-screen {
-    position: fixed; inset: 0;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
-    color: white; pointer-events: none; z-index: 100;
+    position: fixed; inset: 0; display: flex; flex-direction: column;
+    justify-content: center; align-items: center; color: white; z-index: 5;
 }
-#welcome-screen h1 { 
-    font-size: clamp(3rem, 10vw, 5rem); 
-    text-shadow: 0 0 20px #00fbff; 
-    animation: portalGlow 2s ease-in-out infinite alternate;
-}
-@keyframes portalGlow {
-    from { text-shadow: 0 0 10px #00fbff, 0 0 20px #00fbff; opacity: 0.8; }
-    to { text-shadow: 0 0 20px #00fbff, 0 0 40px #7000ff, 0 0 60px #ff0055; opacity: 1; }
-}
+#welcome-screen h1 { font-size: 4rem; text-shadow: 0 0 20px #00fbff; margin-bottom: 10px; }
 
-/* Кнопка Лавины */
-#physics-launcher {
-    position: fixed; top: 60%; left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 20px 40px; font-size: 1.2rem;
-    background: linear-gradient(45deg, #00fbff, #7000ff);
-    color: white; border: none; border-radius: 50px;
-    cursor: pointer; z-index: 5000; display: none;
-    font-weight: bold; text-transform: uppercase;
-    box-shadow: 0 0 20px rgba(0, 251, 255, 0.4);
-}
-
-canvas { position: absolute; top: 0; left: 0; z-index: 10; pointer-events: none; }
-
-/* Стили для кнопок в окнах скрипта */
-.alphabet-btn {
-    padding: 12px 25px; font-size: 1rem; cursor: pointer;
-    background: #111; color: #00fbff; border: 2px solid #00fbff;
-    border-radius: 10px; transition: 0.3s; font-weight: bold;
-    margin: 5px;
-}
-.alphabet-btn:hover { background: #00fbff; color: #000; transform: scale(1.05); }
-
-/* Стили рейтинга */
-.rank-item {
-    display: flex; justify-content: space-between; 
-    padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1);
-    font-size: 0.9rem; color: #eee;
-}
-
-/* Курсоры режимов */
-body.mode-chaos { cursor: crosshair; }
-body.mode-flashlight { cursor: none; }
+canvas { position: absolute; top: 0; left: 0; z-index: 10; }
