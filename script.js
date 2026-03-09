@@ -1,153 +1,128 @@
 const config = {
-    colors: ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#9400D3', '#00fbff', '#ff0055'],
-    shapes: ['circle', 'square', 'rect', 'rhombus', 'triangle', 'star', 'oval'],
+    colors: ['#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF', '#FF00FF', '#FFA500'],
     mode: 'none', device: '',
-    particles: [], targets: [], bodies: [], snakeTrail: [], hiddenItems: [],
-    mouseX: 0, mouseY: 0, isMouseDown: false,
-    alphabet: "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ".split(""),
-    currentLetters: [], activeIndex: 0, isFinished: false,
-    startTime: 0, endTime: 0, errorCount: 0, shake: 0, countdown: 0
+    fullAlpha: "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ".split(""),
+    collected: [], options: [], activeIdx: 0,
+    particles: [], bodies: [], targets: [], snake: [],
+    mouseX: 0, mouseY: 0, shake: 0
 };
 
-const SHAPE_NAMES = { 'star':'Звездочка', 'circle':'Круг', 'oval':'Овал', 'square':'Квадрат', 'triangle':'Треугольник', 'rect':'Прямоугольник', 'rhombus':'Ромб' };
-
-const canvas = document.querySelector('canvas');
+const canvas = document.getElementById('mainCanvas');
 const ctx = canvas.getContext('2d');
 
-const menuList = {
-    pc: [{id:'chaos', n:'🌌 Космос'}, {id:'pop', n:'💥 Хлопушки'}, {id:'snake', n:'🐍 Гусеница'}, {id:'physics', n:'🏔️ Лавина'}, {id:'symphony', n:'🎹 Симфония'}, {id:'alphabet', n:'🅰️ Алфавит'}, {id:'flashlight', n:'🔦 Фонарик'}],
-    mobile: [{id:'alphabet', n:'🅰️ Алфавит'}, {id:'pop', n:'💥 Хлопушки'}, {id:'physics', n:'⚽ Мячики'}, {id:'chaos', n:'🌌 Космос'}]
+const games = {
+    pc: [{id:'chaos', n:'🌌 КОСМОС'}, {id:'pop', n:'💥 ХЛОПУШКИ'}, {id:'snake', n:'🐍 ГУСЕНИЦА'}, {id:'physics', n:'🏔️ ЛАВИНА'}, {id:'symphony', n:'🎹 СИМФОНИЯ'}, {id:'alphabet', n:'🅰️ АЛФАВИТ'}, {id:'flashlight', n:'🔦 ФОНАРИК'}],
+    mobile: [{id:'alphabet', n:'🅰️ АЛФАВИТ'}, {id:'pop', n:'💥 ХЛОПУШКИ'}, {id:'physics', n:'⚽ МЯЧИКИ'}]
 };
 
-// Инициализация
-window.initApp = function(type) {
-    config.device = type;
+window.initApp = function(t) {
+    config.device = t;
     document.getElementById('version-selector').style.display = 'none';
-    const container = document.getElementById('menu-list');
-    menuList[type].forEach(g => {
+    const list = document.getElementById('menu-list');
+    games[t].forEach(g => {
         let d = document.createElement('div'); d.className = 'item'; d.innerText = g.n;
-        d.onclick = () => setMode(g.id); container.appendChild(d);
+        d.onclick = () => setMode(g.id); list.appendChild(d);
     });
 };
 
 function setMode(m) {
     config.mode = m;
-    config.bodies = []; config.particles = []; config.targets = []; config.snakeTrail = []; config.countdown = 0;
+    config.bodies = []; config.particles = []; config.targets = []; config.snake = [];
     document.getElementById('menu').classList.remove('active');
     document.getElementById('welcome-screen').style.display = (m === 'none') ? 'flex' : 'none';
-    if (m === 'alphabet') startAlphabet();
-    if (m === 'pop') { for(let i=0; i<5; i++) addPopTarget(); }
-    if (m === 'flashlight') initQuest();
+    if (m === 'alphabet') initAlphaGame();
+    if (m === 'pop') for(let i=0; i<5; i++) spawnTarget();
 }
 
-// Твоя функция отрисовки объектов
-function drawObject(x, y, s, color, shape, op = 1) {
-    if (op <= 0) return;
-    ctx.globalAlpha = op; ctx.fillStyle = color; ctx.beginPath();
-    if (shape === 'circle') ctx.arc(x, y, s, 0, Math.PI*2);
-    else if (shape === 'star') { for(let i=0; i<10; i++) { let r = (i%2===0)?s:s/2; ctx.lineTo(x + r*Math.cos(i*Math.PI/5 - Math.PI/2), y + r*Math.sin(i*Math.PI/5 - Math.PI/2)); } }
-    else if (shape === 'triangle') { ctx.moveTo(x, y-s); ctx.lineTo(x+s, y+s); ctx.lineTo(x-s, y+s); }
-    else if (shape === 'rect') ctx.rect(x - s*1.5, y - s/2, s*3, s);
-    else ctx.rect(x - s, y - s, s*2, s*2);
-    ctx.fill(); ctx.closePath(); ctx.globalAlpha = 1;
+function initAlphaGame() {
+    config.collected = []; config.activeIdx = 0;
+    refreshOptions();
+}
+
+function refreshOptions() {
+    const correct = config.fullAlpha[config.activeIdx];
+    let others = config.fullAlpha.filter(l => l !== correct);
+    others.sort(() => Math.random() - 0.5);
+    config.options = [correct, others[0], others[1]].sort(() => Math.random() - 0.5);
 }
 
 function draw() {
     ctx.fillStyle = 'black'; ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    if (config.countdown > 0) {
-        ctx.fillStyle = "#00fbff"; ctx.font = "bold 120px sans-serif"; ctx.textAlign = "center";
-        ctx.fillText(config.countdown, canvas.width/2, canvas.height/2 + 40);
-    }
+    // Отрисовка собранных букв сверху
+    if (config.mode === 'alphabet') {
+        ctx.fillStyle = "#555"; ctx.font = "16px sans-serif";
+        config.fullAlpha.forEach((l, i) => {
+            ctx.fillStyle = config.collected.includes(l) ? "#0ff" : "#333";
+            ctx.fillText(l, 20 + i * (canvas.width/35), 40);
+        });
 
-    if (config.mode === 'alphabet' && config.countdown === 0) {
-        const cols = 8, gap = canvas.width > 600 ? 90 : 45, startX = (canvas.width - (cols-1)*gap)/2;
-        config.currentLetters.forEach((char, i) => {
-            let x = startX + (i % cols)*gap, y = 140 + Math.floor(i / cols)*gap;
-            let isAct = (i === config.activeIndex);
-            if (isAct && config.shake > 0.1) { x += (Math.random()-0.5)*config.shake; y += (Math.random()-0.5)*config.shake; config.shake *= 0.9; }
-            ctx.strokeStyle = isAct ? "#0ff" : "#333";
-            ctx.strokeRect(x-gap/2.2, y-gap/2.2, gap/1.1, gap/1.1);
-            ctx.fillStyle = isAct ? "#0ff" : (i < config.activeIndex ? "#222" : "#fff");
-            ctx.font = `bold ${gap/2.5}px sans-serif`; ctx.fillText(char, x, y + gap/8);
+        // 3 кнопки выбора
+        config.options.forEach((l, i) => {
+            let x = canvas.width/2 + (i-1)*120, y = canvas.height/2 + 100;
+            ctx.strokeStyle = "#0ff"; ctx.strokeRect(x-40, y-40, 80, 80);
+            ctx.fillStyle = "#fff"; ctx.font = "bold 40px sans-serif";
+            ctx.textAlign = "center"; ctx.fillText(l, x, y + 15);
         });
     }
 
-    if (config.mode === 'flashlight') {
-        config.hiddenItems.forEach(item => {
-            const dist = Math.hypot(config.mouseX - item.x, config.mouseY - item.y);
-            if (dist < 150) drawObject(item.x, item.y, item.size, item.color, item.shape, 1 - dist/150);
-        });
-        const grad = ctx.createRadialGradient(config.mouseX, config.mouseY, 0, config.mouseX, config.mouseY, 150);
-        grad.addColorStop(0, 'rgba(255,255,255,0.15)'); grad.addColorStop(1, 'transparent');
-        ctx.fillStyle = grad; ctx.beginPath(); ctx.arc(config.mouseX, config.mouseY, 150, 0, Math.PI*2); ctx.fill();
-    }
-
-    // Твоя логика частиц и физики
-    config.particles.forEach((p, i) => {
-        p.x += p.vx; p.y += p.vy; p.age -= 0.02;
-        drawObject(p.x, p.y, 6, p.color, p.shape, p.age);
-        if (p.age <= 0) config.particles.splice(i, 1);
-    });
-
+    // Твоя физика и частицы
     config.bodies.forEach((b, i) => {
         if (config.mode === 'physics') b.vy += 0.5;
-        b.x += b.vx; b.y += b.vy; b.op -= 0.015;
-        if (b.y > canvas.height) { b.y = canvas.height; b.vy *= -0.7; }
-        drawObject(b.x, b.y, b.size, b.color, b.shape, b.op);
+        b.x += b.vx; b.y += b.vy; b.op -= 0.01;
+        if (b.y > canvas.height) { b.y = canvas.height; b.vy *= -0.6; }
+        ctx.globalAlpha = b.op; ctx.fillStyle = b.c;
+        ctx.beginPath(); ctx.arc(b.x, b.y, b.s, 0, 7); ctx.fill();
         if (b.op <= 0) config.bodies.splice(i, 1);
     });
 
-    if (config.mode === 'pop') config.targets.forEach(t => drawObject(t.x, t.y, 40, t.color, 'circle'));
     if (config.mode === 'snake') {
-        config.snakeTrail.push({x: config.mouseX, y: config.mouseY});
-        if (config.snakeTrail.length > 20) config.snakeTrail.shift();
-        config.snakeTrail.forEach((p, i) => drawObject(p.x, p.y, i*2, config.colors[i%9], 'circle', 0.8));
+        config.snake.push({x: config.mouseX, y: config.mouseY});
+        if (config.snake.length > 20) config.snake.shift();
+        config.snake.forEach((p, i) => { ctx.fillStyle = config.colors[i%7]; ctx.beginPath(); ctx.arc(p.x, p.y, i*2, 0, 7); ctx.fill(); });
     }
 
-    requestAnimationFrame(draw);
+    ctx.globalAlpha = 1; requestAnimationFrame(draw);
 }
 
-// Обработка событий (Твой функционал)
-function handleAction(key, x, y) {
-    const color = config.colors[Math.floor(Math.random()*9)], shape = config.shapes[Math.floor(Math.random()*7)];
-    
-    if (config.mode === 'alphabet' && config.countdown === 0) {
-        const target = config.currentLetters[config.activeIndex].toLowerCase();
-        if (config.device === 'mobile' || (key && key.toLowerCase() === target)) {
-            config.activeIndex++; if (config.activeIndex >= config.alphabet.length) setMode('none');
-        } else { config.shake = 15; }
-    }
-    if (config.mode === 'chaos') {
-        for(let i=0; i<5; i++) config.particles.push({x: random(0, canvas.width), y: random(0, canvas.height), vx:random(-3,3), vy:random(-3,3), age:1, color, shape});
-    }
-    if (config.mode === 'physics') config.bodies.push({x, y, vx:random(-4,4), vy:-8, size:30, color, shape, op:1});
-    if (config.mode === 'symphony') config.bodies.push({x:random(0,width), y:random(0,height), vx:0, vy:0, size:50, color, shape, op:1});
-}
-
-// Слушатели
+// Универсальный клик/тап
 window.addEventListener('mousedown', (e) => {
     if (e.target.closest('#menu') || e.target.closest('#menu-trigger')) return;
     config.mouseX = e.clientX; config.mouseY = e.clientY;
-    if (config.mode === 'pop') {
-        config.targets.forEach((t, i) => { if(Math.hypot(config.mouseX-t.x, config.mouseY-t.y) < 50) { config.targets.splice(i,1); addPopTarget(); } });
+    
+    if (config.mode === 'alphabet') {
+        config.options.forEach((l, i) => {
+            let x = canvas.width/2 + (i-1)*120, y = canvas.height/2 + 100;
+            if (Math.hypot(config.mouseX - x, config.mouseY - y) < 50) {
+                if (l === config.fullAlpha[config.activeIdx]) {
+                    config.collected.push(l); config.activeIdx++;
+                    if (config.activeIdx >= 33) initAlphaGame(); else refreshOptions();
+                } else { config.shake = 10; }
+            }
+        });
     }
-    handleAction(null, config.mouseX, config.mouseY);
+    
+    if (config.mode === 'physics') spawnObj(config.mouseX, config.mouseY, true);
+    if (config.mode === 'chaos') for(let i=0; i<5; i++) spawnObj(random(width), random(height), false);
 });
-window.addEventListener('touchstart', (e) => {
-    const t = e.touches[0]; config.mouseX = t.clientX; config.mouseY = t.clientY;
-    handleAction(null, config.mouseX, config.mouseY);
-});
-window.addEventListener('keydown', (e) => handleAction(e.key, canvas.width/2, canvas.height/2));
-window.addEventListener('mousemove', (e) => { config.mouseX = e.clientX; config.mouseY = e.clientY; });
 
-// Вспомогательные
-function startAlphabet() { config.currentLetters = [...config.alphabet]; config.activeIndex = 0; config.countdown = 3; let i = setInterval(() => { if(config.countdown > 1) config.countdown--; else { clearInterval(i); config.countdown = 0; } }, 800); }
-function addPopTarget() { config.targets.push({x:random(50, canvas.width-50), y:random(50, canvas.height-50), color:config.colors[Math.floor(Math.random()*9)]}); }
-function initQuest() { config.hiddenItems = Array.from({length:10}, () => ({x:random(100, canvas.width-100), y:random(100, canvas.height-100), size:50, color:config.colors[0], shape:'star'})); }
-const random = (min, max) => Math.random() * (max - min) + min;
-const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; ctx.textAlign='center'; };
+function spawnObj(x, y, p) {
+    config.bodies.push({x, y, vx: (Math.random()-0.5)*10, vy: p?-10:0, s: 30, c: config.colors[Math.floor(Math.random()*7)], op: 1});
+}
+
+window.addEventListener('keydown', (e) => {
+    if (config.mode === 'alphabet') {
+        const target = config.fullAlpha[config.activeIdx].toLowerCase();
+        if (e.key.toLowerCase() === target) {
+            config.collected.push(config.fullAlpha[config.activeIdx]);
+            config.activeIdx++; if (config.activeIdx >= 33) initAlphaGame(); else refreshOptions();
+        }
+    }
+});
+
+const resize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
 window.addEventListener('resize', resize); resize();
-document.getElementById('menu-trigger').onclick = () => document.getElementById('menu').classList.toggle('active');
+window.toggleMenu = () => document.getElementById('menu').classList.toggle('active');
+const random = (min, max) => Math.random()*(max-min)+min;
 
 draw();
