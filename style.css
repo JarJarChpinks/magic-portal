@@ -1,13 +1,11 @@
 * { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
 body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: sans-serif; }
 
-canvas { position: absolute; top: 0; left: 0; z-index: 10; pointer-events: auto; }
+canvas { position: absolute; top: 0; left: 0; z-index: 10; }
 
-/* Свечение Magic Portal */
 .glow-text {
-    font-size: clamp(3rem, 10vw, 5rem);
-    color: #fff;
-    text-align: center;
+    font-size: clamp(2.5rem, 8vw, 5rem);
+    color: #fff; text-align: center;
     animation: portalGlow 2s ease-in-out infinite alternate;
 }
 
@@ -21,26 +19,30 @@ canvas { position: absolute; top: 0; left: 0; z-index: 10; pointer-events: auto;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
 }
 
+.btn-group { display: flex; gap: 20px; margin-top: 30px; flex-wrap: wrap; justify-content: center; }
+
 #menu-trigger {
-    position: fixed; top: 20px; left: 0; width: 50px; height: 100px;
+    position: fixed; top: 20px; left: 0; width: 45px; height: 90px;
     background: #00fbff; border: 2px solid #fff; border-radius: 0 15px 15px 0;
     cursor: pointer; z-index: 99999; box-shadow: 0 0 15px #00fbff;
 }
 
 #menu {
     position: fixed; top: 0; left: -280px; width: 260px; height: 100%;
-    background: rgba(10, 10, 10, 0.95); z-index: 99998;
-    transition: 0.3s; padding-top: 120px; border-right: 2px solid #00fbff;
+    background: rgba(10, 10, 10, 0.96); z-index: 99998;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
+    padding-top: 110px; border-right: 2px solid #00fbff;
 }
 #menu.active { left: 0; }
 
-.item { padding: 20px; color: #fff; cursor: pointer; border-bottom: 1px solid #222; }
-.item:hover { background: rgba(0, 251, 255, 0.2); }
+.item { padding: 18px; color: #fff; cursor: pointer; border-bottom: 1px solid #222; font-size: 1.1rem; }
+.item:hover { background: rgba(0, 251, 255, 0.15); color: #00fbff; }
 
 .alphabet-btn {
-    padding: 15px 30px; background: #00fbff; border: none; border-radius: 10px;
-    font-weight: bold; cursor: pointer;
+    padding: 15px 25px; background: transparent; color: #00fbff; 
+    border: 2px solid #00fbff; border-radius: 10px; font-weight: bold; cursor: pointer;
 }
+.alphabet-btn:hover { background: #00fbff; color: #000; }
 
 #welcome-screen {
     position: fixed; inset: 0; display: flex; flex-direction: column;
