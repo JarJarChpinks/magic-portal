@@ -3,25 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Magic Portal - Fix</title>
+    <title>Magic Portal 14.0</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- Контейнер для холста, чтобы он не перекрывал всё подряд -->
-    <div id="canvas-wrapper"></div>
 
-    <div id="menu-trigger" onclick="toggleMenu(event)"></div>
-    
-    <div id="menu">
-        <div class="item" onclick="selectMode('alphabet', event)">🔠 Алфавит</div>
-        <div class="item" onclick="selectMode('physics', event)">⚽ Физика</div>
-        <div class="item" onclick="selectMode('pop', event)">🎈 Шарики</div>
-        <div class="item" onclick="selectMode('none', event)">🏠 Главная</div>
+    <!-- Экран выбора версии -->
+    <div id="version-selector" style="position:fixed; inset:0; background:#000; z-index:100000; display:flex; flex-direction:column; justify-content:center; align-items:center; color:white;">
+        <h1>ВЫБЕРИТЕ УСТРОЙСТВО</h1>
+        <div style="display:flex; gap:20px; margin-top:30px;">
+            <button class="alphabet-btn" onclick="initVersion('pc')">💻 КОМПЬЮТЕР</button>
+            <button class="alphabet-btn" onclick="initVersion('mobile')">📱 ТЕЛЕФОН</button>
+        </div>
     </div>
+
+    <div id="menu-trigger"></div>
+    <nav id="menu">
+        <div class="item" onclick="resetToHome()">🏠 ГЛАВНОЕ МЕНЮ</div>
+        <div class="item" data-mode="chaos">🌌 КОСМОС</div>
+        <div class="item" data-mode="pop">💥 ХЛОПУШКИ</div>
+        <div class="item" data-mode="snake">🐍 ГУСЕНИЦА</div>
+        <div class="item" data-mode="physics">🏔️ ЛАВИНА</div>
+        <div class="item" data-mode="symphony">🎹 СИМФОНИЯ</div>
+        <div class="item" data-mode="alphabet">🅰️ АЛФАВИТ</div>
+        <div class="item" data-mode="flashlight">🔦 ФОНАРИК</div>
+    </nav>
 
     <div id="welcome-screen">
         <h1>MAGIC PORTAL</h1>
-        <p>Нажми на синюю полоску слева</p>
+        <p>Выберите игру в меню слева</p>
     </div>
 
     <script src="https://cdnjs.cloudflare.com"></script>
