@@ -3,12 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Magic Portal 16.0</title>
+    <title>Magic Portal 17.0</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
-    <!-- Выбор версии -->
     <div id="version-selector">
         <h1 class="glow-text">MAGIC PORTAL</h1>
         <div class="btn-group">
@@ -17,15 +15,11 @@
         </div>
     </div>
 
-    <!-- Кнопка меню -->
     <button id="menu-trigger" onclick="toggleMenu()"></button>
 
-    <!-- Динамическое меню -->
     <nav id="menu">
         <div class="item" onclick="location.reload()">🏠 ГЛАВНОЕ МЕНЮ</div>
-        <div id="menu-items-container">
-            <!-- Сюда JS вставит игры в зависимости от версии -->
-        </div>
+        <div id="menu-items-container"></div>
     </nav>
 
     <div id="welcome-screen" style="display:none;">
