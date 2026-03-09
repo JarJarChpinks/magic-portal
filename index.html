@@ -3,55 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Magic Portal</title>
-    <style>
-        body { margin: 0; padding: 0; overflow: hidden; background: #000; touch-action: none; user-select: none;
-            cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org' width='40' height='40' style='font-size:30px'><text y='30'>🚗</text></svg>"), auto; }
-        canvas { display: block; }
-    </style>
+    <title>Magic Portal Pro</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div id="menu-trigger"></div>
+    <div id="menu">
+        <div class="item" data-mode="alphabet">🔠 Алфавит</div>
+        <div class="item" data-mode="chaos">✨ Хаос (Клавиши)</div>
+        <div class="item" data-mode="physics">⚽ Физика</div>
+        <div class="item" data-mode="pop">🎈 Лопни шарик</div>
+        <div class="item" data-mode="flashlight">🔦 Фонарик</div>
+        <div class="item" data-mode="none">🏠 Главная</div>
+    </div>
+
+    <div id="welcome-screen">
+        <h1>MAGIC PORTAL</h1>
+        <p>Выбери игру в меню слева</p>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com"></script>
-    <script>
-        let elements = [], stars = [];
-        const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789⭐🚀🚗🛸👾✨";
-
-        function setup() {
-            createCanvas(windowWidth, windowHeight);
-            textAlign(CENTER, CENTER);
-            textFont('Arial Black, sans-serif');
-            for (let i = 0; i < 100; i++) stars.push({ x: random(width), y: random(height), s: random(1, 3) });
-        }
-
-        function draw() {
-            background(0, 0, 15);
-            fill(255, 150); noStroke();
-            for (let s of stars) circle(s.x, s.y, s.s);
-            for (let i = elements.length - 1; i >= 0; i--) {
-                let e = elements[i];
-                fill(e.r, e.g, e.b, e.opacity); textSize(e.size);
-                push(); translate(e.x, e.y); rotate(e.rot); text(e.txt, 0, 0); pop();
-                e.size += 2; e.opacity -= 4;
-                if (e.opacity <= 0) elements.splice(i, 1);
-            }
-        }
-
-        function spawn(t, x, y) {
-            elements.push({ txt: t, x: x || random(width*0.2, width*0.8), y: y || random(height*0.2, height*0.8), size: 60, opacity: 255, rot: random(-0.3, 0.3), r: random(150, 255), g: random(150, 255), b: 255 });
-        }
-
-        function keyPressed() {
-            if (key.length === 1) spawn(key.toUpperCase());
-            else if (keyCode === 32) spawn("⭐");
-            return false;
-        }
-
-        function mousePressed() {
-            spawn(random(CHARS.split('')), mouseX, mouseY);
-            if (!fullscreen() && !/iPhone/i.test(navigator.userAgent)) fullscreen(true);
-        }
-
-        function windowResized() { resizeCanvas(windowWidth, windowHeight); }
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
