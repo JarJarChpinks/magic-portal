@@ -3,31 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Magic Portal 17.0</title>
+    <title>Magic Portal 19.0</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="version-selector">
         <h1 class="glow-text">MAGIC PORTAL</h1>
-        <div class="btn-group">
-            <button class="alphabet-btn" onclick="initVersion('pc')">💻 ВЕРСИЯ ДЛЯ ПК</button>
-            <button class="alphabet-btn" onclick="initVersion('mobile')">📱 МОБИЛЬНАЯ ВЕРСИЯ</button>
+        <div style="display:flex; gap:20px; margin-top:20px;">
+            <button class="alphabet-btn" onclick="initApp('pc')">💻 PC ВЕРСИЯ</button>
+            <button class="alphabet-btn" onclick="initApp('mobile')">📱 МОБИЛЬНАЯ</button>
         </div>
     </div>
 
-    <button id="menu-trigger" onclick="toggleMenu()"></button>
-
+    <div id="menu-trigger"></div>
     <nav id="menu">
         <div class="item" onclick="location.reload()">🏠 ГЛАВНОЕ МЕНЮ</div>
-        <div id="menu-items-container"></div>
+        <div id="menu-list"></div>
     </nav>
 
-    <div id="welcome-screen" style="display:none;">
+    <div id="welcome-screen">
         <h1 class="glow-text">MAGIC PORTAL</h1>
-        <p style="color:#00fbff">Выберите игру в меню слева</p>
+        <p style="color:#00fbff">Выберите игру в меню</p>
     </div>
 
-    <script src="https://cdnjs.cloudflare.com"></script>
+    <canvas></canvas>
     <script src="script.js"></script>
 </body>
 </html>
