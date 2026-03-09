@@ -2,12 +2,13 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Magic Portal 13.0 PRO</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="startup-screen" style="position:fixed; inset:0; background:#000; z-index:100000; display:flex; flex-direction:column; justify-content:center; align-items:center; color:white;">
+    <!-- Экран выбора (самый верхний слой) -->
+    <div id="startup-screen" style="position:fixed; inset:0; background:#000; z-index:100000; display:flex; flex-direction:column; justify-content:center; align-items:center; color:white; font-family:sans-serif;">
         <h1 class="glow-text">MAGIC PORTAL</h1>
         <div style="display:flex; gap:20px; margin-top:30px;">
             <button class="alphabet-btn" onclick="boot('pc')">💻 PC ВЕРСИЯ</button>
@@ -18,7 +19,7 @@
     <div id="menu-trigger"></div>
     <nav id="menu">
         <div class="item" onclick="location.reload()">🏠 Главная</div>
-        <div id="menu-items-container"></div>
+        <div id="menu-list"></div>
     </nav>
 
     <div id="welcome-screen">
@@ -26,6 +27,7 @@
         <p>Выберите игру в меню слева</p>
     </div>
 
+    <!-- Твои оригинальные UI элементы -->
     <div id="quest-panel"></div>
     <div id="alphabet-timer">0.0с</div>
     <div id="alphabet-record"></div>
