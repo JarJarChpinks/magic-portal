@@ -3,36 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Magic Portal 15.0</title>
+    <title>Magic Portal 16.0</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <!-- Экран выбора (Первый слой) -->
+    <!-- Выбор версии -->
     <div id="version-selector">
         <h1 class="glow-text">MAGIC PORTAL</h1>
-        <p style="color: #00fbff; margin-bottom: 20px;">ВЫБЕРИТЕ УСТРОЙСТВО</p>
-        <div style="display:flex; gap:20px;">
-            <button class="alphabet-btn" onclick="initVersion('pc')">💻 PC</button>
-            <button class="alphabet-btn" onclick="initVersion('mobile')">📱 MOBILE</button>
+        <div class="btn-group">
+            <button class="alphabet-btn" onclick="initVersion('pc')">💻 ВЕРСИЯ ДЛЯ ПК</button>
+            <button class="alphabet-btn" onclick="initVersion('mobile')">📱 МОБИЛЬНАЯ ВЕРСИЯ</button>
         </div>
     </div>
 
-    <!-- Кнопка-триггер (Вынесена из JS управления) -->
+    <!-- Кнопка меню -->
     <button id="menu-trigger" onclick="toggleMenu()"></button>
 
+    <!-- Динамическое меню -->
     <nav id="menu">
         <div class="item" onclick="location.reload()">🏠 ГЛАВНОЕ МЕНЮ</div>
-        <div class="item" data-mode="alphabet">🅰️ АЛФАВИТ</div>
-        <div class="item" data-mode="physics">⚽ ЛАВИНА</div>
-        <div class="item" data-mode="pop">🎈 ХЛОПУШКИ</div>
-        <div class="item" data-mode="chaos">🌌 КОСМОС</div>
-        <div class="item" data-mode="flashlight">🔦 ФОНАРИК</div>
+        <div id="menu-items-container">
+            <!-- Сюда JS вставит игры в зависимости от версии -->
+        </div>
     </nav>
 
     <div id="welcome-screen" style="display:none;">
         <h1 class="glow-text">MAGIC PORTAL</h1>
-        <p>Выберите игру в меню слева</p>
+        <p style="color:#00fbff">Выберите игру в меню слева</p>
     </div>
 
     <script src="https://cdnjs.cloudflare.com"></script>
