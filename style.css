@@ -1,39 +1,42 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; }
+* { margin: 0; padding: 0; box-sizing: border-box; touch-action: manipulation; }
+body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 
-/* Тот самый триггер-полоска слева */
+/* Триггер меню */
 #menu-trigger {
     position: fixed; top: 20px; left: 0;
-    width: 28px; height: 75px;
-    background: rgba(255, 255, 255, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    border-radius: 0 5px 5px 0;
+    width: 30px; height: 80px;
+    background: rgba(0, 251, 255, 0.2);
+    border: 1px solid rgba(0, 251, 255, 0.4);
+    border-radius: 0 10px 10px 0;
     cursor: pointer; z-index: 2000;
 }
 
-/* Выезжающее меню */
+/* Меню */
 #menu {
-    position: fixed; top: 20px; left: -250px;
-    width: 220px; background: #111;
-    border: 1px solid #444; color: white;
-    z-index: 1500; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    padding: 10px;
+    position: fixed; top: 20px; left: -260px;
+    width: 230px; background: rgba(15, 15, 15, 0.95);
+    border: 1px solid #333; color: white;
+    z-index: 1500; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    padding: 10px; border-radius: 0 15px 15px 0;
+    backdrop-filter: blur(10px);
 }
-#menu.active { left: 35px; }
+#menu.active { left: 0; }
 
-.item { padding: 15px; cursor: pointer; border-bottom: 1px solid #333; transition: 0.2s; }
-.item:hover { background: #333; color: #00fbff; padding-left: 20px; }
+.item { 
+    padding: 15px; cursor: pointer; border-bottom: 1px solid #222; 
+    transition: 0.2s; font-size: 1.1rem; 
+}
+.item:hover { background: rgba(0, 251, 255, 0.1); color: #00fbff; padding-left: 25px; }
 
-/* Магический заголовок */
+/* Приветствие */
 #welcome-screen {
     position: fixed; inset: 0;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
     color: white; pointer-events: none; z-index: 100;
-    background: radial-gradient(circle, #111 0%, #000 100%);
 }
 #welcome-screen h1 { 
-    font-size: 4rem; 
-    text-shadow: 0 0 10px #00fbff, 0 0 20px #00fbff, 0 0 40px #7000ff; 
+    font-size: clamp(3rem, 10vw, 5rem); 
+    text-shadow: 0 0 20px #00fbff; 
     animation: portalGlow 2s ease-in-out infinite alternate;
 }
 @keyframes portalGlow {
@@ -45,65 +48,32 @@ body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font
 #physics-launcher {
     position: fixed; top: 60%; left: 50%;
     transform: translate(-50%, -50%);
-    padding: 20px 50px; font-size: 1.5rem;
-    background: linear-gradient(45deg, #00fbff, #7000ff, #ff0055);
-    background-size: 200% 200%;
-    animation: gradientShift 3s infinite;
+    padding: 20px 40px; font-size: 1.2rem;
+    background: linear-gradient(45deg, #00fbff, #7000ff);
     color: white; border: none; border-radius: 50px;
     cursor: pointer; z-index: 5000; display: none;
-    box-shadow: 0 0 30px rgba(0, 251, 255, 0.5);
     font-weight: bold; text-transform: uppercase;
+    box-shadow: 0 0 20px rgba(0, 251, 255, 0.4);
 }
-@keyframes gradientShift { 0% {background-position:0% 50%} 50% {background-position:100% 50%} 100% {background-position:0% 50%} }
 
-canvas { position: absolute; top: 0; left: 0; z-index: 10; }
+canvas { position: absolute; top: 0; left: 0; z-index: 10; pointer-events: none; }
 
-/* Курсоры */
-body.mode-chaos { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org' width='32' height='32' style='font-size:24px'><text y='24'>🪄</text></svg>"), auto; }
-body.mode-pop { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org' width='32' height='32' style='font-size:24px'><text y='24'>👆</text></svg>"), auto; }
-body.mode-physics { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org' width='32' height='32' style='font-size:24px'><text y='24'>🌪️</text></svg>"), auto; }
-body.mode-symphony { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org' width='32' height='32' style='font-size:24px'><text y='24'>🎹</text></svg>"), auto; }
-
-body.flash { background-color: rgba(255, 255, 255, 0.1) !important; }
-
-.alphabet-controls {
-    position: fixed; top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    display: none; flex-direction: column; gap: 20px; z-index: 5000;
-}
+/* Стили для кнопок в окнах скрипта */
 .alphabet-btn {
-    padding: 15px 30px; font-size: 1.2rem; cursor: pointer;
-    background: #222; color: #00fbff; border: 2px solid #00fbff;
+    padding: 12px 25px; font-size: 1rem; cursor: pointer;
+    background: #111; color: #00fbff; border: 2px solid #00fbff;
     border-radius: 10px; transition: 0.3s; font-weight: bold;
+    margin: 5px;
 }
-.alphabet-btn:hover { background: #00fbff; color: #000; box-shadow: 0 0 20px #00fbff; }
-body.mode-alphabet { cursor: default; }
+.alphabet-btn:hover { background: #00fbff; color: #000; transform: scale(1.05); }
 
-#alphabet-timer {
-    position: fixed; top: 20px; right: 20px;
-    font-size: 2rem; color: #00fbff; font-weight: bold;
-    text-shadow: 0 0 10px #00fbff; display: none; z-index: 1000;
+/* Стили рейтинга */
+.rank-item {
+    display: flex; justify-content: space-between; 
+    padding: 8px; border-bottom: 1px solid rgba(255,255,255,0.1);
+    font-size: 0.9rem; color: #eee;
 }
-#alphabet-record {
-    position: fixed; top: 60px; right: 20px;
-    font-size: 1rem; color: #ff0055; display: none; z-index: 1000;
-}
-/* Кнопки финала */
-.alphabet-controls {
-    background: rgba(0,0,0,0.8); padding: 30px; border-radius: 20px;
-    border: 2px solid #7000ff; box-shadow: 0 0 50px rgba(112,0,255,0.5);
-}
-body.mode-flashlight { cursor: none; } /* Скрываем стрелку, так как фонарик — это и есть курсор */
-body.mode-snake { cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org' width='32' height='32' style='font-size:24px'><text y='24'>🍎</text></svg>"), auto; }
 
-#quest-panel {
-    position: fixed; top: 10px; left: 50%; transform: translateX(-50%);
-    background: rgba(255, 255, 255, 0.1); padding: 15px 30px;
-    border-radius: 50px; color: white; font-weight: bold;
-    pointer-events: none; z-index: 1000; display: none;
-    border: 1px solid rgba(255, 255, 255, 0.2); backdrop-filter: blur(5px);
-}
-#leaderboard-container::-webkit-scrollbar { width: 8px; }
-#leaderboard-container::-webkit-scrollbar-thumb { background: #00fbff; border-radius: 10px; }
-.rank-item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid #333; font-size: 0.9rem; }
-.mode-icon { margin-right: 5px; }
+/* Курсоры режимов */
+body.mode-chaos { cursor: crosshair; }
+body.mode-flashlight { cursor: none; }
