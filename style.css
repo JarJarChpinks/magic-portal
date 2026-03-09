@@ -1,21 +1,44 @@
 * { margin: 0; padding: 0; box-sizing: border-box; touch-action: none; }
-body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: sans-serif; }
-canvas { position: absolute; top: 0; left: 0; z-index: 10; cursor: none; }
+body, html { width: 100%; height: 100%; overflow: hidden; background: #000; font-family: 'Segoe UI', sans-serif; }
 
-.glow-text {
-    font-size: clamp(2.5rem, 8vw, 5rem); color: #fff; text-align: center;
+#menu-trigger {
+    position: fixed; top: 20px; left: 0; width: 30px; height: 80px;
+    background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 0 5px 5px 0; cursor: pointer; z-index: 60000;
+}
+
+#menu {
+    position: fixed; top: 20px; left: -250px; width: 220px; background: #111;
+    border: 1px solid #444; color: white; z-index: 55000; transition: 0.3s; padding: 10px;
+}
+#menu.active { left: 35px; }
+
+.item { padding: 15px; cursor: pointer; border-bottom: 1px solid #333; transition: 0.2s; }
+.item:hover { background: #333; color: #00fbff; padding-left: 20px; }
+
+#welcome-screen {
+    position: fixed; inset: 0; display: flex; flex-direction: column; 
+    justify-content: center; align-items: center; color: white; pointer-events: none; z-index: 100;
+}
+#welcome-screen h1 { 
+    font-size: 4rem; text-shadow: 0 0 10px #00fbff, 0 0 20px #00fbff; 
     animation: portalGlow 2s ease-in-out infinite alternate;
 }
 @keyframes portalGlow {
-    from { text-shadow: 0 0 10px #00fbff, 0 0 20px #00fbff; }
-    to { text-shadow: 0 0 20px #00fbff, 0 0 40px #7000ff, 0 0 60px #ff0055; }
+    from { text-shadow: 0 0 10px #00fbff, 0 0 20px #00fbff; opacity: 0.8; }
+    to { text-shadow: 0 0 20px #00fbff, 0 0 40px #7000ff, 0 0 60px #ff0055; opacity: 1; }
 }
 
-#version-selector { position: fixed; inset: 0; background: #000; z-index: 100000; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-#menu-trigger { position: fixed; top: 20px; left: 0; width: 45px; height: 90px; background: #00fbff; border-radius: 0 15px 15px 0; cursor: pointer; z-index: 60000; border: 2px solid #fff; }
-#menu { position: fixed; top: 0; left: -280px; width: 260px; height: 100%; background: rgba(10, 10, 10, 0.98); z-index: 50000; transition: 0.3s; padding-top: 100px; border-right: 2px solid #00fbff; }
-#menu.active { left: 0; }
-.item { padding: 18px; color: #fff; cursor: pointer; border-bottom: 1px solid #222; font-size: 1.1rem; }
-.item:hover { background: rgba(0,251,255,0.2); }
-.alphabet-btn { padding: 15px 25px; background: transparent; color: #00fbff; border: 2px solid #00fbff; border-radius: 10px; cursor: pointer; font-weight: bold; margin: 10px; }
-#welcome-screen { position: fixed; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; color: white; z-index: 5; pointer-events: none; }
+canvas { position: absolute; top: 0; left: 0; z-index: 10; }
+
+.alphabet-btn {
+    padding: 15px 30px; font-size: 1.2rem; cursor: pointer;
+    background: #222; color: #00fbff; border: 2px solid #00fbff;
+    border-radius: 10px; transition: 0.3s; font-weight: bold; margin: 5px;
+}
+.alphabet-btn:hover { background: #00fbff; color: #000; box-shadow: 0 0 20px #00fbff; }
+
+/* Кастомные курсоры */
+body.mode-chaos { cursor: crosshair; }
+body.mode-pop { cursor: pointer; }
+body.mode-physics { cursor: n-resize; }
