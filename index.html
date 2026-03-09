@@ -2,131 +2,56 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <!-- Мета-теги для мобильных: запрет зума и полноэкранный режим для iOS/Android -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>Magic Portal</title>
     <style>
-        body { 
-            margin: 0; 
-            padding: 0; 
-            overflow: hidden; 
-            background-color: #000; 
-            /* Курсор-машинка для ПК */
-            cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org' width='40' height='40' style='font-size:30px'><text y='30'>🚗</text></svg>"), auto;
-            user-select: none;
-            touch-action: none; /* Отключает стандартные жесты браузера на смартфонах */
-        }
+        body { margin: 0; padding: 0; overflow: hidden; background: #000; touch-action: none; user-select: none;
+            cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org' width='40' height='40' style='font-size:30px'><text y='30'>🚗</text></svg>"), auto; }
         canvas { display: block; }
     </style>
 </head>
-<body oncontextmenu="return false;">
-
-    <!-- Подключаем библиотеку p5.js -->
-    <script src="https://cdn.jsdelivr.net"></script>
-
+<body>
+    <script src="https://cdnjs.cloudflare.com"></script>
     <script>
-        let elements = [];
-        let stars = [];
+        let elements = [], stars = [];
         const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789⭐🚀🚗🛸👾✨";
 
         function setup() {
-            // Создаем холст на весь экран
             createCanvas(windowWidth, windowHeight);
             textAlign(CENTER, CENTER);
             textFont('Arial Black, sans-serif');
-
-            // Генерируем звездное небо
-            for (let i = 0; i < 100; i++) {
-                stars.push({ x: random(width), y: random(height), s: random(1, 3) });
-            }
+            for (let i = 0; i < 100; i++) stars.push({ x: random(width), y: random(height), s: random(1, 3) });
         }
 
         function draw() {
-            background(0, 0, 15); // Космический фон
-
-            // Рисуем звезды
-            noStroke();
-            fill(255, 255, 255, 150);
-            for (let s of stars) { circle(s.x, s.y, s.s); }
-
-            // Анимация вылетающих элементов
+            background(0, 0, 15);
+            fill(255, 150); noStroke();
+            for (let s of stars) circle(s.x, s.y, s.s);
             for (let i = elements.length - 1; i >= 0; i--) {
                 let e = elements[i];
-                fill(e.r, e.g, e.b, e.opacity);
-                textSize(e.size);
-                
-                push();
-                translate(e.x, e.y);
-                rotate(e.rot);
-                text(e.txt, 0, 0);
-                pop();
-                
-                e.size += 2;      // Увеличиваем размер
-                e.opacity -= 4;   // Уменьшаем прозрачность
-                
+                fill(e.r, e.g, e.b, e.opacity); textSize(e.size);
+                push(); translate(e.x, e.y); rotate(e.rot); text(e.txt, 0, 0); pop();
+                e.size += 2; e.opacity -= 4;
                 if (e.opacity <= 0) elements.splice(i, 1);
             }
-
-            // Подсказка для начала игры
-            if (elements.length === 0) {
-                fill(255, 100);
-                textSize(16);
-                text("TAP OR PRESS ANY KEY", width/2, height - 40);
-            }
         }
 
-        // Функция создания элемента
         function spawn(t, x, y) {
-            elements.push({
-                txt: t,
-                x: x || random(width * 0.2, width * 0.8),
-                y: y || random(height * 0.2, height * 0.8),
-                size: 60,
-                opacity: 255,
-                rot: random(-0.3, 0.3),
-                r: random(150, 255),
-                g: random(150, 255),
-                b: 255
-            });
+            elements.push({ txt: t, x: x || random(width*0.2, width*0.8), y: y || random(height*0.2, height*0.8), size: 60, opacity: 255, rot: random(-0.3, 0.3), r: random(150, 255), g: random(150, 255), b: 255 });
         }
 
-        // УПРАВЛЕНИЕ: Клавиатура (PC)
         function keyPressed() {
-            if (key.length === 1) {
-                spawn(key.toUpperCase());
-            } else if (keyCode === 32) {
-                spawn("⭐");
-            }
-            // Попытка включить фулскрин на Android при нажатии клавиш
-            toggleFS();
-            return false; 
-        }
-
-        // УПРАВЛЕНИЕ: Касание (Android/iOS) и Мышь (PC)
-        function mousePressed() {
-            let randomChar = CHARS.charAt(floor(random(CHARS.length)));
-            spawn(randomChar, mouseX, mouseY);
-            toggleFS();
+            if (key.length === 1) spawn(key.toUpperCase());
+            else if (keyCode === 32) spawn("⭐");
             return false;
         }
 
-        // Включение полноэкранного режима
-        function toggleFS() {
-            let fs = fullscreen();
-            if (!fs) fullscreen(true);
+        function mousePressed() {
+            spawn(random(CHARS.split('')), mouseX, mouseY);
+            if (!fullscreen() && !/iPhone/i.test(navigator.userAgent)) fullscreen(true);
         }
 
-        // Адаптация при повороте экрана смартфона
-        function windowResized() {
-            resizeCanvas(windowWidth, windowHeight);
-            // Перегенерируем звезды под новый размер
-            stars = [];
-            for (let i = 0; i < 100; i++) {
-                stars.push({ x: random(width), y: random(height), s: random(1, 3) });
-            }
-        }
+        function windowResized() { resizeCanvas(windowWidth, windowHeight); }
     </script>
 </body>
 </html>
