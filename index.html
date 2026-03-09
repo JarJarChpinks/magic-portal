@@ -3,15 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Magic Portal 21.0</title>
+    <title>Magic Portal 26.0</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div id="version-selector">
-        <h1 class="glow-text">MAGIC PORTAL</h1>
-        <div class="btn-group">
-            <button class="alphabet-btn" onclick="initApp('pc')">💻 PC ВЕРСИЯ</button>
-            <button class="alphabet-btn" onclick="initApp('mobile')">📱 МОБИЛЬНАЯ</button>
+    <!-- Начальный экран выбора -->
+    <div id="startup-screen" style="position:fixed; inset:0; background:#000; z-index:100000; display:flex; flex-direction:column; justify-content:center; align-items:center; color:white;">
+        <h1 class="glow-text" style="margin-bottom:30px;">MAGIC PORTAL</h1>
+        <div style="display:flex; gap:20px;">
+            <button class="alphabet-btn" onclick="boot('pc')">💻 PC ВЕРСИЯ</button>
+            <button class="alphabet-btn" onclick="boot('mobile')">📱 МОБИЛЬНАЯ</button>
         </div>
     </div>
 
@@ -24,6 +25,26 @@
     <div id="welcome-screen">
         <h1 class="glow-text">MAGIC PORTAL</h1>
         <p style="color:#00fbff">Выберите игру в меню слева</p>
+    </div>
+
+    <!-- окна авторизации и рейтинга -->
+    <div id="auth-screen" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:11000; flex-direction:column; justify-content:center; align-items:center; color:white;">
+        <h2>Введите данные для рейтинга</h2>
+        <input type="text" id="user-name" placeholder="Имя" style="margin:10px; padding:10px;">
+        <input type="number" id="user-age" placeholder="Возраст" style="margin:10px; padding:10px;">
+        <button class="alphabet-btn" onclick="saveProfile()">СОХРАНИТЬ</button>
+    </div>
+
+    <div id="rank-choice-screen" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.9); z-index:11000; flex-direction:column; justify-content:center; align-items:center; color:white;">
+        <h2>Участвовать в рейтинге?</h2>
+        <div style="display:flex; gap:20px; margin-top:20px;">
+            <button class="alphabet-btn" onclick="confirmRank(true)">ДА ✅</button>
+            <button class="alphabet-btn" onclick="confirmRank(false)">НЕТ ❌</button>
+        </div>
+        <div id="leaderboard-container" style="margin-top:30px; width:300px; height:250px; overflow-y:auto; background:rgba(255,255,255,0.1); padding:15px; border-radius:15px; border:1px solid #444;">
+            <h3 style="text-align:center; color:#00fbff;">ТОП 20 ИГРОКОВ</h3>
+            <div id="leaderboard-list"></div>
+        </div>
     </div>
 
     <canvas id="mainCanvas"></canvas>
